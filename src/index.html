@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <link rel="shortcut icon" href="#"/>
+    <style>
+     html, body {
+         margin: 0;
+         padding: 0;
+         background: #1D2B53;
+     }
+     #app {
+         display: flex;
+         justify-content: center;
+         height: 100%;
+         width: 100%;
+     }
+     canvas {
+         align-self: center;
+         width: min(98vw, calc(98vh * (16/9)));
+         aspect-ratio: 16/9;
+     }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>
+     document.addEventListener('DOMContentLoaded',()=>{Space.default(document.getElementById('app'))});
+    </script>
+  </body>
+</html>

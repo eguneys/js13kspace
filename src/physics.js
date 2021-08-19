@@ -30,8 +30,11 @@ export default function Body(_x, _y, _ox, _oy, _w, _h, f_collide) {
     let amount = Math.floor(this.remx);
     this._move_x(amount);
     this.remx -= amount;
-    
-    // this.move_y(amount);
+
+    this.remy += this.dy * dt;
+    amount = Math.floor(this.remy);
+    this._move_y(amount);
+    this.remy -= amount;
   };
 
   this._move_x = amount => {
@@ -42,6 +45,20 @@ export default function Body(_x, _y, _ox, _oy, _w, _h, f_collide) {
       if (f_collide(this)) {
         this.x -= step;
         this.dx = 0;
+        this._get_body();
+        return;
+      }
+    }
+  };
+
+  this._move_y = amount => {
+    let step = Math.sign(amount);
+    for (let i = 0; i < Math.abs(amount); i++) {
+      this.y += step;
+      this._get_body();
+      if (f_collide(this)) {
+        this.y -= step;
+        this.dy = 0;
         this._get_body();
         return;
       }

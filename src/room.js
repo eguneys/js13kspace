@@ -1,6 +1,8 @@
 import tiles from './tiles';
 import Grid from './grid';
 import Body from './physics';
+import * as actions from './actions';
+import { JumperThink, PlayerThink } from './thinks';
 
 export default function Room(ctx) {
   let { g, a } = ctx;
@@ -42,12 +44,19 @@ export default function Room(ctx) {
     return obj;
   };
 
+  this.player = (x, y) => {
+    let obj = new PlayerSpawn(ctx, this);
+    this.objects.get(x, y, obj);
+    obj.init(x, y);
+    return obj;
+  };
+
   this.removeJumper = (jumper) => {
     this.objects.remove(jumper);
   };
 
   this.f_collide = body => {
-    return false;
+    return this.is_solid(...body.cbox);
   };
 
   this.update = dt => {
@@ -69,6 +78,27 @@ export default function Room(ctx) {
   };
 }
 
+export function PlayerSpawn(ctx, room) {
+  let { g, a } = ctx;
+
+  this.init = (x, y) => {
+    this.x = x;
+    this.y = y;
+
+    let obj = new Jumper(ctx, room);
+    obj.init(this.x, this.y, new PlayerThink(ctx, room, obj));
+    room.objects.get(this.x, this.y, obj);
+  };
+
+  this.update = dt => {
+
+  };
+
+  this.draw = () => {
+    
+  };
+}
+
 export function JumperSpawn(ctx, room) {
   let { g, a } = ctx;
 
@@ -84,7 +114,7 @@ export function JumperSpawn(ctx, room) {
       this.t_delay -= dt;
       if (this.t_delay < 0) {
         let obj = new Jumper(ctx, room);
-        obj.init(this.x, this.y);
+        obj.init(this.x, this.y, new JumperThink(ctx, room, obj));
         room.objects.get(this.x, this.y, obj);
         
         this.t_delay = ticks.second * 3;
@@ -100,21 +130,30 @@ export function JumperSpawn(ctx, room) {
 export function Jumper(ctx, room) {
   let { g, a } = ctx;
 
-  this.init = (x, y) => {
+  this.init = (x, y, think) => {
+
+    this.think = think;
     
     this.body = new Body(x, y, 0, 0, 4, 4, room.f_collide);
-    
-    this.t_life = ticks.second * 3;
+
+    this.walkLeft = new actions.Walk(this, -1);
+    this.walkRight = new actions.Walk(this, 1);
+    this.jump = new actions.Jump(this);
+
+    this.g_velocity = [this.walkLeft,
+                       this.walkRight,
+                       this.jump];
+  };
+
+  this.autoRemove = () => {
+    room.removeJumper(this);
   };
 
   this.update = dt => {
 
-    this.t_life -= dt;
+    this.think.update(dt);
 
-    if (this.t_life < 0) {
-      room.removeJumper(this);
-    }
-
+    this.g_velocity.forEach(_ => _.update(dt));
     
     this.body.move(dt);
   };

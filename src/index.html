@@ -2,10 +2,12 @@
   <head>
     <link rel="shortcut icon" href="#"/>
     <style>
+
      html, body {
          margin: 0;
          padding: 0;
          background: #1D2B53;
+         image-rendering: pixelated;
      }
      #app {
          display: flex;
@@ -15,7 +17,7 @@
      }
      canvas {
          align-self: center;
-         width: min(98vw, calc(98vh * (16/9)));
+         width: min(calc(100vw - 8px), calc(100vh * (16/9) - 8px));
          aspect-ratio: 16/9;
      }
     </style>

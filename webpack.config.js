@@ -27,6 +27,12 @@ const conf_dev = {
       generator: {
         filename: '[name][ext]'
       }
+    }, {
+      test: /\.png/,
+      type: 'asset/resource',
+      generator: {
+        filename: '[name][ext]'
+      }
     }]
   }
 };
@@ -50,6 +56,12 @@ const conf_prod = {
   module: {
     rules: [{
       test: /\.dat/,
+      type: 'asset/resource',
+      generator: {
+        filename: '[name][ext]'
+      }
+    }, {
+      test: /\.png/,
       type: 'asset/resource',
       generator: {
         filename: '[name][ext]'

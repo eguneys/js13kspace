@@ -13,7 +13,7 @@ export default function Input() {
   };
 
   this.btn = (key) => {
-    return this._btn.get(key);
+    return this._btn.get(key) || 0;
   };
 
   this.update = dt => {

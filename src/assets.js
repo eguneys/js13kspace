@@ -1,4 +1,5 @@
 import leveldat from '../assets/level.dat';
+import sprites from '../assets/sprites.png';
 
 export function LevelData(buff) {
 
@@ -20,7 +21,6 @@ export function LevelData(buff) {
       ]);
       i++;
     }
-    
     res.push(coords);
   }
 
@@ -29,14 +29,26 @@ export function LevelData(buff) {
   this.res = res;
 }
 
+function image(path) {
+  let res = new Image();
+  return new Promise(resolve => {
+    res.onload = function() {
+      resolve(res);
+    };
+    res.src = path;
+  });
+}
+
 export default function Assets() {
   return Promise.all([
+    image(sprites),
     fetch(leveldat)
       .then(res => res.blob())
       .then(blob => blob.arrayBuffer())
       .then(buf => new LevelData(buf))
-  ]).then(([level]) => {
+  ]).then(([sprites, level]) => {
     return {
+      sprites,
       level
     };
   });

@@ -11,6 +11,8 @@ export default function Body(_x, _y, _ox, _oy, _w, _h, f_collide) {
   this.cbox = [this.x+this.ox,
                this.y+this.oy,
                this.w, this.h];
+
+  this.cbox_pre = [0, 0, 0, 0];
   
   this.dx = 0;
   this.dy = 0;
@@ -18,6 +20,11 @@ export default function Body(_x, _y, _ox, _oy, _w, _h, f_collide) {
   this.remy = 0;
 
   this._get_body = () => {
+    this.cbox_pre[0] = this.cbox[0];
+    this.cbox_pre[1] = this.cbox[1];
+    this.cbox_pre[2] = this.cbox[2];
+    this.cbox_pre[3] = this.cbox[3];
+    
     this.cbox[0] = this.x + this.ox;
     this.cbox[1] = this.y + this.oy;
     this.cbox[2] = this.w;
@@ -25,6 +32,7 @@ export default function Body(_x, _y, _ox, _oy, _w, _h, f_collide) {
   };
 
   this.move = (dt) => {
+    this._get_body();
 
     this.remx += this.dx * dt;
     let amount = Math.floor(this.remx);

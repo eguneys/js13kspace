@@ -31,6 +31,12 @@ export default function Body(_x, _y, _ox, _oy, _w, _h, f_collide) {
     this.cbox[3] = this.h;
   };
 
+  this.manual = (x, y) => {
+    this.x = x;
+    this.y = y;
+    this._get_body();
+  };
+  
   this.move = (dt) => {
     this._get_body();
 

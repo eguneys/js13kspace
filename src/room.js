@@ -28,10 +28,10 @@ export default function Room(ctx) {
     }
   };
 
-  this.is_solid = (x, y, w, h) => {
+  this.is_solid = (x, y, w, h, ox, oy) => {
     return this.grid.collide(x,
                              y,
-                             w, h);
+                             w, h, ox, oy);
   };
   
   this.solid = (x, y, i) => {
@@ -132,45 +132,69 @@ export function Jumper(ctx, room) {
 
   this.init = (x, y, think, anim) => {
 
-    this.facing = 1;
-    
     this.anim = anim;
     
     this.think = think;
     this.is = this.think.is;
     
-    this.body = new Body(x, y-25, 0, 0, 21, 25, room.f_collide);
+    this.body = new Body(x, y-25+4, 4, 4, 21 - 6, 25 -4, room.f_collide);
 
-    this.walkLeft = new actions.Walk(this, -1);
-    this.walkRight = new actions.Walk(this, 1);
-    this.jump = new actions.Jump(this);
-    this.knock = new actions.Knock(this);
+    this.actions = new actions.Actions(this);
 
-    this.g_velocity = [this.walkLeft,
-                       this.walkRight,
-                       this.jump,
-                       this.knock];
+    this.facing = 1;
+    this.grounded = false;
 
-    this.walking = false;
+    this.bodyanim = false;
+  };
+
+  this.walk = (state, direction) => {
+    if (this.fixLedge) {
+      this.actions.req(actions.FixLedge, direction);
+    } else if (this.ledged) {
+      this.actions.req(actions.Ledge, direction);
+    } else if (this.grounded) {
+      this.actions.req(state, direction);
+    }
+  };
+
+  this.jump = (dir) => {
+    if (!this.grounded) {
+      return;
+    }
+
+    this.actions.req(actions.Anticipate, dir);
+    this.actions.req(actions.ShortJumpAccel, dir);
+    
+    this.actions.req(actions.LongJumpAccel, dir);
   };
 
   this.update = dt => {
 
-    this.think.update(dt);
-
-    this.g_velocity.forEach(_ => _.update(dt));
-
-    this.walking = 0;
-    if (this.walkLeft.state() !== actions.Rest) {
-      this.walking = this.walkLeft.state();
-      this.facing = -1;
-    } else if (this.walkRight.state() !== actions.Rest) {
-      this.walking = this.walkRight.state();
-      this.facing = 1;
+    if (!this.bodyanim) {
+      this.body.move(dt);
     }
 
-    this.body.move(dt);
+    this.grounded = room.is_solid(...this.body.cbox, 0, 1);
 
+    this.ledged = this.grounded &&
+      !room.is_solid(...this.body.cbox, this.facing * this.body.cbox[2] * 0.75, 1);
+
+    this.fixLedge = !this.grounded &&
+      room.is_solid(...this.body.cbox, 1*this.facing, 0);
+    
+    if (this.actions.state() === actions.WalkRightAccel ||
+        this.actions.state() === actions.WalkLeftAccel) {
+      this.facing = this.actions.facing;
+    }
+
+    if (this.actions.state() === actions.Fall) {
+      if (this.grounded) {
+        this.actions.req(actions.Rest);
+      }
+    }
+
+    this.think.update(dt);
+    this.actions.update(dt);
     this.anim.update(dt);
     
     if (this.dead) {

@@ -1,3 +1,5 @@
+import * as actions from './actions';
+
 export function JumperThink(ctx, room, jumper) {
 
   this.is = 'jumper';
@@ -41,18 +43,18 @@ export function PlayerThink(ctx, room, jumper) {
     }
 
     if (i_x === -1) {
-      jumper.walkLeft.req();
+      jumper.walk(actions.WalkLeftAccel, i_x);
     } else {
-      jumper.walkLeft.cut();
+      jumper.actions.cut([actions.WalkLeftAccel, actions.PaceLeft]);
     }
     if (i_x === 1) {
-      jumper.walkRight.req();
+      jumper.walk(actions.WalkRightAccel, i_x);
     } else {
-      jumper.walkRight.cut();
+      jumper.actions.cut([actions.WalkRightAccel, actions.PaceRight]);
     }
 
     if (i_y === 1) {
-      jumper.jump.req();
+      jumper.jump(i_x);
     }
     
   };

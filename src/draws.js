@@ -63,28 +63,70 @@ export function JumperDraw(ctx, room, jumper) {
                            ticks.sixth,
                          ]);
 
+  let a_fall = new Anim8(ctx.g,
+                         [21, 25],
+                         0, 4, [
+                           ticks.sixth,
+                           ticks.second * 30
+                         ]);
+
+  let a_ledge = new Anim8(ctx.g,
+                          [21, 25],
+                          0, 5, [
+                            ticks.half*0.6,
+                            ticks.half*0.4,
+                            ticks.half
+                          ], [
+                            8,
+                            10,
+                            6,
+                          ], [
+                            8,
+                            16,
+                            24
+                          ]);
+
   let a_current = a_walk,
       a_tocurrent;
 
   this.update = (dt) => {
 
-    if (jumper.jump.state() === actions.Anticipate) {
+    if (jumper.actions.state() === actions.LedgeHang) {
+    } else if (jumper.actions.state() === actions.Ledge) {
+      if (a_current !== a_ledge) {
+        a_tocurrent = a_ledge;
+      }
+    } else if (jumper.actions.state() === actions.Fall) {
+      if (a_current !== a_fall) {
+        a_tocurrent = a_fall;
+      }
+    } else if (jumper.actions.state() === actions.ShortJumpAccel) {
+      if (a_current !== a_jumpaccel) {
+        a_tocurrent = a_jumpaccel;
+      }      
+    } else if (jumper.actions.state() === actions.LongJumpAccel) {
+      if (a_current !== a_jumpaccel) {
+        a_tocurrent = a_jumpaccel;
+      }      
+    } else if (jumper.actions.state() === actions.Anticipate) {
       if (a_current !== a_anticipate) {
         a_tocurrent = a_anticipate;
       }      
-    } else if (jumper.jump.state() === actions.Accel) {
+    } else if (jumper.actions.state() === actions.JumpAccel) {
       if (a_current !== a_jumpaccel) {
         a_tocurrent = a_jumpaccel;
       }
-    } else if (jumper.jump.state() === actions.Hang) {
+    } else if (jumper.actions.state() === actions.Hang) {
       if (a_current !== a_hang) {
         a_tocurrent = a_hang;
       }    
-    } else if (jumper.walking === actions.Pace) {
+    } else if (jumper.actions.state() === actions.PaceLeft ||
+               jumper.actions.state() === actions.PaceRight) {
       if (a_current !== a_run) {
         a_tocurrent = a_run;
       }
-    } else if (jumper.walking === actions.Accel) {
+    } else if (jumper.actions.state() === actions.WalkLeftAccel ||
+               jumper.actions.state() === actions.WalkRightAccel) {
       if (a_current !== a_walk) {
         a_tocurrent = a_walk;
       }
@@ -94,15 +136,16 @@ export function JumperDraw(ctx, room, jumper) {
       }
     }
 
-    a_current.update(dt);
-    
     if (a_tocurrent) {
-      if (a_current.is_ok()) {
+      if (a_current === a_fall ||
+          a_current === a_ledge ||
+          a_current.is_ok()) {
         a_current = a_tocurrent;
         a_tocurrent = undefined;
         a_current.goto(0);
       }
     }
+    a_current.update(dt);
   };
   
   this.draw = () => {

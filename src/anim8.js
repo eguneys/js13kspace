@@ -21,6 +21,8 @@ export default function Anim8(g, grid, fx, fy, durations, xoffsets = [], yoffset
   this.goto = (_frame) => {
     frame = _frame;
     i = 0;
+    ox = 0;
+    oy = 0;
   };
   
   this.update = (dt) => {

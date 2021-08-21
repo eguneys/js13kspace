@@ -20,10 +20,10 @@ export default function Grid(celw, celh, nbtilesx, nbtilesy) {
     return this.data.values();
   };
 
-  this.collide = (x, y, w, h) => {
+  this.collide = (x, y, w, h, ox = 0, oy = 0) => {
     for (let i = 0; i < w; i++) {
       for (let j = 0; j < h; j++) {
-        if (this.get(x+i,y+j)) {
+        if (this.get(ox + x+i,oy + y+j)) {
           return true;
         }
       }

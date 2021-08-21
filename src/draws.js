@@ -1,9 +1,41 @@
 import Anim8 from './anim8';
 import * as actions from './actions';
 
-export function JumperDraw(ctx, room, jumper) {
+export function JumperDraw(ctx, room, jumper, isblue) {
 
   let dt = (ticks.lengths + ticks.three);
+
+
+  let a_head_blue = new Anim8(ctx.g,
+                         [21, 14, 64, 0],
+                              0, 1, [dt,
+                                dt,
+                                dt], [
+                                  1,
+                                  -1,
+                                  1
+                                ], [
+                                  -3,
+                                  -2,
+                                  -1
+                                ]);
+  
+  let a_head_pink = new Anim8(ctx.g,
+                         [21, 14, 64, 0],
+                         0, 0, [dt,
+                                dt,
+                                dt], [
+                                  1,
+                                  -1,
+                                  1
+                                ], [
+                                  -3,
+                                  -2,
+                                  -1
+                                ]);
+
+
+  let a_head = isblue ? a_head_blue : a_head_pink;
   
   let a_idle = new Anim8(ctx.g,
                          [21, 25],
@@ -146,10 +178,13 @@ export function JumperDraw(ctx, room, jumper) {
       }
     }
     a_current.update(dt);
+
+    a_head.update(dt);
   };
   
   this.draw = () => {
     a_current.draw(jumper.body.x, jumper.body.y, jumper.facing === -1);
+    a_head.draw(jumper.body.x + jumper.facing * a_current.o_x(), jumper.body.y + a_current.o_y(), jumper.facing === -1);
   };
   
 }

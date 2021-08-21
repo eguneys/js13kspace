@@ -40,7 +40,7 @@ export default function Room(ctx) {
 
   this.jumper = (x, y) => {
     let obj = new JumperSpawn(ctx, this);
-    // this.objects.get(x, y, obj);
+    this.objects.get(x, y, obj);
     obj.init(x, y);
     return obj;
   };
@@ -114,7 +114,7 @@ export function JumperSpawn(ctx, room) {
         let obj = new Jumper(ctx, room);
         obj.init(this.x, this.y,
                  new JumperThink(ctx, room, obj),
-                 new JumperDraw(ctx, room, obj));
+                 new JumperDraw(ctx, room, obj, true));
         room.objects.get(this.x, this.y, obj);
         
         this.t_delay = ticks.second * 3;

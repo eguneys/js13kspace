@@ -1,8 +1,8 @@
 export default function Anim8(g, grid, fx, fy, durations, xoffsets = [], yoffsets = []) {
 
   let frames = durations.map((_,i) => [
-    (fx+i) * grid[0],
-    fy * grid[1],
+    (grid[2] || 0) + (fx+i) * grid[0],
+    (grid[3] || 0) + fy * grid[1],
     grid[0],
     grid[1]
   ]);
@@ -15,6 +15,9 @@ export default function Anim8(g, grid, fx, fy, durations, xoffsets = [], yoffset
   function _frame() {
     return frames[frame];
   }
+
+  this.o_x = () => ox;
+  this.o_y = () => oy;
 
   this.is_ok = () => frame < 1;
 

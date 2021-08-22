@@ -12,7 +12,7 @@ export function JumperThink(ctx, room, jumper) {
 
     // let p = room.get_type(...jumper.body.cbox);
 
-    //jumper.walkRight.req();
+    // jumper.walk(actions.WalkRightAccel, 1);
     
     if (t_life < 0) {
       // jumper.dead = true;

@@ -34,7 +34,6 @@ export default function Anim8(g, grid, fx, fy, durations, xoffsets = [], yoffset
       frame = (frame + 1) % durations.length;
       i=0;
     }
-
     ox = lerp(0.3, ox, xoffsets[frame] || 0);
     oy = lerp(0.3, oy, yoffsets[frame] || 0);
   };

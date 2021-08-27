@@ -170,11 +170,7 @@ export function Jumper(ctx, room) {
   };
 
   this.walk = (state, direction) => {
-    if (this.fixLedge) {
-      this.actions.req(actions.FixLedge, direction);
-    } else if (this.ledged) {
-      this.actions.req(actions.Ledge, direction);
-    } else if (this.grounded) {
+    if (this.grounded) {
       this.actions.req(state, direction);
     }
   };
@@ -214,6 +210,10 @@ export function Jumper(ctx, room) {
       if (this.grounded) {
         this.actions.req(actions.Rest);
       }
+    }
+
+    if (!this.grounded) {
+      this.actions.req(actions.Fall);
     }
 
     this.think.update(dt);

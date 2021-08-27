@@ -184,12 +184,28 @@ export function Actions(jumper) {
   };
   
   
-  machine.add(WalkLeftAccel, [ShortJumpAccel, WalkRightAccel, PaceLeft, Rest, Ledge],
+  machine.add(WalkLeftAccel, [ShortJumpAccel,
+                              WalkRightAccel,
+                              PaceLeft,
+                              Rest,
+                              Ledge,
+                              Fall],
               walkAccelLeftUpdate, walkAccelBegin);
-  machine.add(WalkRightAccel, [ShortJumpAccel, WalkLeftAccel, PaceRight, Rest, Ledge],
+  machine.add(WalkRightAccel, [ShortJumpAccel,
+                               WalkLeftAccel,
+                               PaceRight,
+                               Rest,
+                               Ledge,
+                               Fall],
               walkAccelRightUpdate, walkAccelBegin);
-  machine.add(PaceLeft, [Rest, LongJumpAccel, Ledge], paceUpdate);
-  machine.add(PaceRight, [Rest, LongJumpAccel, Ledge], paceUpdate);
+  machine.add(PaceLeft, [Rest,
+                         LongJumpAccel,
+                         Ledge,
+                         Fall], paceUpdate);
+  machine.add(PaceRight, [Rest,
+                          LongJumpAccel,
+                          Ledge,
+                          Fall], paceUpdate);
   machine.add(Rest, [Ledge, WalkLeftAccel, WalkRightAccel, Anticipate], restUpdate, restBegin);
   machine.add(Anticipate, [JumpAccel], anticipateUpdate);
   machine.add(JumpAccel, [Hang, FixLedge], jumpAccelUpdate);

@@ -1,5 +1,5 @@
-- [?] Ledge Climb
-- [ ] 6 Screen of levels and Camera
+- [x] 6 Screen of levels and Camera
+- [no] Ledge Climb
 - [ ] Tiles
 - [ ] Sword , master NPC
 - [ ] Enemy

@@ -10,8 +10,11 @@ export default function Graphics(element, sprites) {
     ctx.clearRect(0, 0, 320, 180);
   };
 
+  this.ctx = fn => fn(ctx);
+
   this.color = (color) => {
     ctx.fillStyle = color;
+    ctx.strokeStyle = color;
   };
 
   this.fr = (x, y, w, h) => {
@@ -19,6 +22,15 @@ export default function Graphics(element, sprites) {
     y = Math.round(y);
     
     ctx.fillRect(x, y, w, h);
+  };
+
+  this.r = (x, y, w, h) => {
+    x = Math.round(x);
+    y = Math.round(y);
+
+    ctx.beginPath();
+    ctx.rect(x, y, w, h);
+    ctx.stroke();
   };
 
 

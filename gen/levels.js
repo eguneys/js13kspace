@@ -68,7 +68,7 @@ fs.createReadStream(path.join(__dirname, src))
                      this.data[idx+3]];
 
         if (x === 4) {
-          console.log(x/4, y/4, idx, this.data[idx]);
+          //console.log(x/4, y/4, idx, this.data[idx]);
         }
 
         let idx_color = colors.indexOf(rgbtostring(color));
@@ -79,7 +79,6 @@ fs.createReadStream(path.join(__dirname, src))
     }
 
     let res = new Uint16Array(level_push.view());
-
     fs.writeFileSync(path.join(__dirname, dest), res);
 
     console.log('written', res.length*2, 'bytes');

@@ -1,10 +1,11 @@
-- [ ] Ledge Climb
+- [?] Ledge Climb
+- [ ] 6 Screen of levels and Camera
 - [ ] Tiles
-- [ ] Sword
+- [ ] Sword , master NPC
 - [ ] Enemy
 - [ ] Sword Enemy FX
-- [ ] 6 Screen of levels
 - [ ] Background - decoration
 - [ ] Die Respawn
 - [ ] End NPC, Make space for love
 - [ ] Intro
+- [ ] Story Atmosphere

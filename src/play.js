@@ -18,7 +18,6 @@ export default function Play(ctx) {
     g.cls();
     g.color(colors.dark);
     g.fr(0, 0, 320, 180);
-
     this.room.draw();
   };
 }

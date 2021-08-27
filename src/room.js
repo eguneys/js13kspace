@@ -4,11 +4,15 @@ import Body from './physics';
 import * as actions from './actions';
 import { JumperThink, PlayerThink } from './thinks';
 import { JumperDraw } from './draws';
+import Camera from './camera';
 
 export default function Room(ctx) {
   let { g, a } = ctx;
 
   this.init = (level) => {
+
+    this.camera = new Camera(g);
+    this.camera.bounds(0, 0, level.width * 4, level.height * 4);
 
     this.grid = new Grid(4, 4, level.width, level.height);
 
@@ -61,17 +65,25 @@ export default function Room(ctx) {
   };
 
   this.update = dt => {
+    this.camera.update(dt);
     for (let obj of this.objects.all()) {
       obj.update(dt);
     }
   };
 
   this.draw = () => {
+
+    this.camera.draw();
+    
+    this.camera.attach();
+    
     this.grid.draw(g);
     
     for (let obj of this.objects.all()) {
       obj.draw();
     }
+
+    this.camera.detach();
   };
 }
 
@@ -85,6 +97,7 @@ export function PlayerSpawn(ctx, room) {
     let obj = new Jumper(ctx, room);
     obj.init(this.x, this.y, new PlayerThink(ctx, room, obj), new JumperDraw(ctx, room, obj));
     room.objects.get(this.x, this.y, obj);
+    room.camera.follow(obj.ctarget);
   };
 
   this.update = dt => {
@@ -130,6 +143,13 @@ export function JumperSpawn(ctx, room) {
 export function Jumper(ctx, room) {
   let { g, a } = ctx;
 
+  this.ctarget = [0, 0];
+  
+  const getctarget = () => {
+    this.ctarget[0] = this.body.cbox[0] + this.body.cbox[2] * 0.5;
+    this.ctarget[1] = this.body.cbox[1] + this.body.cbox[3] * 0.5;
+  };
+
   this.init = (x, y, think, anim) => {
 
     this.anim = anim;
@@ -145,6 +165,8 @@ export function Jumper(ctx, room) {
     this.grounded = false;
 
     this.bodyanim = false;
+
+    getctarget();
   };
 
   this.walk = (state, direction) => {
@@ -169,6 +191,7 @@ export function Jumper(ctx, room) {
   };
 
   this.update = dt => {
+    getctarget();
 
     if (!this.bodyanim) {
       this.body.move(dt);

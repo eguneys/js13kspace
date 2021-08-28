@@ -1,10 +1,10 @@
 import tiles from './tiles';
 import Grid from './grid';
 import Body from './physics';
-import * as actions from './actions';
 import { JumperThink, PlayerThink } from './thinks';
 import { JumperDraw } from './draws';
 import Camera from './camera';
+import Actions from './actions';
 
 export default function Room(ctx) {
   let { g, a } = ctx;
@@ -42,13 +42,6 @@ export default function Room(ctx) {
     this.grid.get(x, y, tile_colors[i]);
   };
 
-  this.jumper = (x, y) => {
-    let obj = new JumperSpawn(ctx, this);
-    this.objects.get(x, y, obj);
-    obj.init(x, y);
-    return obj;
-  };
-
   this.player = (x, y) => {
     let obj = new PlayerSpawn(ctx, this);
     this.objects.get(x, y, obj);
@@ -56,8 +49,8 @@ export default function Room(ctx) {
     return obj;
   };
 
-  this.removeJumper = (jumper) => {
-    this.objects.remove(jumper);
+  this.rmv = (obj) => {
+    this.objects.remove(obj);
   };
 
   this.f_collide = body => {
@@ -95,52 +88,21 @@ export function PlayerSpawn(ctx, room) {
     this.y = y;
 
     let obj = new Jumper(ctx, room);
-    obj.init(this.x, this.y, new PlayerThink(ctx, room, obj), new JumperDraw(ctx, room, obj));
+    obj.init(this.x, this.y,
+             new PlayerThink(ctx, room, obj),
+             new JumperDraw(ctx, room, obj));
+    
     room.objects.get(this.x, this.y, obj);
     room.camera.follow(obj.ctarget);
   };
 
-  this.update = dt => {
+  this.update = dt => {};
 
-  };
-
-  this.draw = () => {
-    
-  };
-}
-
-export function JumperSpawn(ctx, room) {
-  let { g, a } = ctx;
-
-  this.init = (x, y) => {
-    this.x = x;
-    this.y = y;
-    this.t_delay = ticks.one;
-  };
-  
-  this.update = dt => {
-
-    if (this.t_delay >= 0) {
-      this.t_delay -= dt;
-      if (this.t_delay < 0) {
-
-        let obj = new Jumper(ctx, room);
-        obj.init(this.x, this.y,
-                 new JumperThink(ctx, room, obj),
-                 new JumperDraw(ctx, room, obj, true));
-        room.objects.get(this.x, this.y, obj);
-        
-        this.t_delay = ticks.second * 3;
-      }
-    }
-  };
-
-  this.draw = () => {
-    
-  };
+  this.draw = () => {};
 }
 
 export function Jumper(ctx, room) {
+
   let { g, a } = ctx;
 
   this.ctarget = [0, 0];
@@ -159,69 +121,32 @@ export function Jumper(ctx, room) {
     
     this.body = new Body(x, y-25+4, 4, 4, 21 - 6, 25 -4, room.f_collide);
 
-    this.actions = new actions.Actions(this);
+    this.actions = new Actions(this);
 
     this.facing = 1;
     this.grounded = false;
 
-    this.bodyanim = false;
-
+    this.move_x = 0;
+    this.move_y = 0;
+    
     getctarget();
   };
 
-  this.walk = (state, direction) => {
-    if (this.grounded) {
-      this.actions.req(state, direction);
-    }
-  };
-
-  this.jump = (dir) => {
-    if (!this.grounded) {
-      return;
-    }
-
-    this.actions.req(actions.Anticipate, dir);
-    this.actions.req(actions.ShortJumpAccel, dir);
-    
-    this.actions.req(actions.LongJumpAccel, dir);
-  };
-
+  this.walk = dx => this.move_x = dx;
+  this.jump = dy => this.move_y = dy;
+  
   this.update = dt => {
     getctarget();
 
-    if (!this.bodyanim) {
-      this.body.move(dt);
-    }
-
     this.grounded = room.is_solid(...this.body.cbox, 0, 1);
-
-    this.ledged = this.grounded &&
-      !room.is_solid(...this.body.cbox, this.facing * this.body.cbox[2] * 0.75, 1);
-
-    this.fixLedge = !this.grounded &&
-      room.is_solid(...this.body.cbox, 1*this.facing, 0);
     
-    if (this.actions.state() === actions.WalkRightAccel ||
-        this.actions.state() === actions.WalkLeftAccel) {
-      this.facing = this.actions.facing;
-    }
-
-    if (this.actions.state() === actions.Fall) {
-      if (this.grounded) {
-        this.actions.req(actions.Rest);
-      }
-    }
-
-    if (!this.grounded) {
-      this.actions.req(actions.Fall);
-    }
-
     this.think.update(dt);
     this.actions.update(dt);
+    this.body.move(dt);
     this.anim.update(dt);
     
     if (this.dead) {
-      room.removeJumper(this);
+      room.rmv(this);
     }
   };
 

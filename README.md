@@ -1,6 +1,6 @@
 - [x] 6 Screen of levels and Camera
-- [no] Ledge Climb
-- [ ] Tiles
+- [no] Ledge Climb, walking
+- [ ] Tiles, Cyberpunk Theme
 - [ ] Sword , master NPC
 - [ ] Enemy
 - [ ] Sword Enemy FX

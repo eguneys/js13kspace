@@ -1,26 +1,11 @@
 import Anim8 from './anim8';
-import * as actions from './actions';
+import { maxV, runAccel } from './actions';
 
 export function JumperDraw(ctx, room, jumper, isblue) {
 
   let dt = (ticks.lengths + ticks.three);
 
-
-  let a_head_blue = new Anim8(ctx.g,
-                         [21, 14, 64, 0],
-                              0, 1, [dt,
-                                dt,
-                                dt], [
-                                  1,
-                                  -1,
-                                  1
-                                ], [
-                                  -3,
-                                  -2,
-                                  -1
-                                ]);
-  
-  let a_head_pink = new Anim8(ctx.g,
+  let a_head = new Anim8(ctx.g,
                          [21, 14, 64, 0],
                          0, 0, [dt,
                                 dt,
@@ -34,9 +19,6 @@ export function JumperDraw(ctx, room, jumper, isblue) {
                                   -1
                                 ]);
 
-
-  let a_head = isblue ? a_head_blue : a_head_pink;
-  
   let a_idle = new Anim8(ctx.g,
                          [21, 25],
                          0, 0, [dt,
@@ -102,83 +84,44 @@ export function JumperDraw(ctx, room, jumper, isblue) {
                            ticks.second * 30
                          ]);
 
-  let a_ledge = new Anim8(ctx.g,
-                          [21, 25],
-                          0, 5, [
-                            ticks.half*0.6,
-                            ticks.half*0.4,
-                            ticks.half
-                          ], [
-                            8,
-                            10,
-                            6,
-                          ], [
-                            8,
-                            16,
-                            24
-                          ]);
-
-  let a_current = a_walk,
+  let a_current = a_run,
       a_tocurrent;
 
+  const toa = a_ => {
+    if (a_tocurrent !== a_) {
+      a_tocurrent = a_;
+      a_tocurrent.goto(0);
+    }
+  };
+  
   this.update = (dt) => {
 
-    if (jumper.actions.state() === actions.LedgeHang) {
-    } else if (jumper.actions.state() === actions.Ledge) {
-      if (a_current !== a_ledge) {
-        a_tocurrent = a_ledge;
-      }
-    } else if (jumper.actions.state() === actions.Fall) {
-      if (a_current !== a_fall) {
-        a_tocurrent = a_fall;
-      }
-    } else if (jumper.actions.state() === actions.ShortJumpAccel) {
-      if (a_current !== a_jumpaccel) {
-        a_tocurrent = a_jumpaccel;
-      }      
-    } else if (jumper.actions.state() === actions.LongJumpAccel) {
-      if (a_current !== a_jumpaccel) {
-        a_tocurrent = a_jumpaccel;
-      }      
-    } else if (jumper.actions.state() === actions.Anticipate) {
-      if (a_current !== a_anticipate) {
-        a_tocurrent = a_anticipate;
-      }      
-    } else if (jumper.actions.state() === actions.JumpAccel) {
-      if (a_current !== a_jumpaccel) {
-        a_tocurrent = a_jumpaccel;
-      }
-    } else if (jumper.actions.state() === actions.Hang) {
-      if (a_current !== a_hang) {
-        a_tocurrent = a_hang;
-      }    
-    } else if (jumper.actions.state() === actions.PaceLeft ||
-               jumper.actions.state() === actions.PaceRight) {
-      if (a_current !== a_run) {
-        a_tocurrent = a_run;
-      }
-    } else if (jumper.actions.state() === actions.WalkLeftAccel ||
-               jumper.actions.state() === actions.WalkRightAccel) {
-      if (a_current !== a_walk) {
-        a_tocurrent = a_walk;
+    if (jumper.grounded) {
+      if (Math.abs(jumper.body.dx) < runAccel && jumper.move_x === 0) {
+        toa(a_idle);
+      } else {
+        if (Math.abs(jumper.body.dx) < maxV *0.5) {
+          toa(a_walk);
+        } else {
+          toa(a_run);
+        }
       }
     } else {
-      if (a_current !== a_idle) {
-        a_tocurrent = a_idle;
+      if (jumper.body.dy < 0) {
+        toa(a_jumpaccel);
+      } else if (Math.abs(jumper.body.dy) < maxV * 0.1) {
+        toa(a_hang);
+      } else {
+        toa(a_fall);
       }
     }
 
-    if (a_tocurrent) {
-      if (a_current === a_fall ||
-          a_current === a_ledge ||
-          a_current.is_ok()) {
-        a_current = a_tocurrent;
-        a_tocurrent = undefined;
-        a_current.goto(0);
-      }
+    if (a_tocurrent && a_tocurrent !== a_current) {
+      a_current = a_tocurrent;
+      a_tocurrent = undefined;
     }
+    
     a_current.update(dt);
-
     a_head.update(dt);
   };
   

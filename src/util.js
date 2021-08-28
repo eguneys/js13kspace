@@ -1,3 +1,9 @@
+appr = (val, target, max) => {
+  return val < target ?
+    Math.min(val + max, target) :
+    Math.max(val - max, target);
+};
+
 lerp = (t, src, target) => {
   return (1-t) * src + target * t;
 };

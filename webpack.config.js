@@ -51,7 +51,7 @@ const conf_prod = {
     filename: '[name].bundle.js',
     path: path.resolve(__dirname, 'dist'),
     clean: true,
-    library: 'Space'
+    library: "Space"
   },
   module: {
     rules: [{

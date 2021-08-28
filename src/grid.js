@@ -1,14 +1,3 @@
-export function GridO(celw, celh, nbtilesx, nbtilesy) {
-  let width = nbtilesx * celw,
-      height = nbtilesy * celh;
-
-  this.data = [];
-
-  this.all = () => this.data;
-
-  
-}
-
 export default function Grid(celw, celh, nbtilesx, nbtilesy) {
 
   let width = nbtilesx * celw,

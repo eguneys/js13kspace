@@ -1,3 +1,4 @@
+import Anim8 from './anim8';
 import tiles from './tiles';
 import Grid from './grid';
 import Body from './physics';
@@ -62,7 +63,14 @@ export default function Room(ctx) {
     for (let obj of this.objects.all()) {
       obj.update(dt);
     }
+    a_tile.update(dt);
   };
+
+
+  let a_tile = new Anim8(ctx.g,
+                          [4, 4, 0, 48],
+                          0, 0, [ticks.second]);
+
 
   this.draw = () => {
 
@@ -70,7 +78,7 @@ export default function Room(ctx) {
     
     this.camera.attach();
     
-    this.grid.draw(g);
+    this.grid.draw(a_tile);
     
     for (let obj of this.objects.all()) {
       obj.draw();

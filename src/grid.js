@@ -28,13 +28,14 @@ export default function Grid(celw, celh, nbtilesx, nbtilesy) {
     return this.data.get(y * width + x);
   };
 
-  this.draw = (g) => {
+  this.draw = (a_tile) => {
     for (let i = 0; i < nbtilesx; i++) {
       for (let j = 0; j < nbtilesy; j++) {
         let t = this.get(i*celw, j*celh);
         if (t) {
-          g.color(t);
-          g.fr(i * celw, j * celh, celw, celh);
+          //g.color(t);
+          //g.fr(i * celw, j * celh, celw, celh);
+          a_tile.draw(i * celw, j * celh, celw, celh);
         }
       }
     }

@@ -6,7 +6,7 @@ export function JumperDraw(ctx, room, jumper, isblue) {
   let dt = (ticks.lengths + ticks.three);
 
   let a_head = new Anim8(ctx.g,
-                         [21, 14, 64, 0],
+                         [21, 14, 0, 25],
                          0, 0, [dt,
                                 dt,
                                 dt], [
@@ -31,7 +31,7 @@ export function JumperDraw(ctx, room, jumper, isblue) {
 
   let a_walk = new Anim8(ctx.g,
                          [21, 25],
-                         0, 1, [
+                         3, 0, [
                            dt,
                            dt * 1.3,
                            dt
@@ -44,7 +44,7 @@ export function JumperDraw(ctx, room, jumper, isblue) {
 
   let a_run = new Anim8(ctx.g,
                         [21, 25],
-                        0, 2, [
+                        6, 0, [
                           -dt*0.5 + dt,
                           -dt*0.5 + dt * 1.3,
                           -dt*0.5 + dt
@@ -59,27 +59,21 @@ export function JumperDraw(ctx, room, jumper, isblue) {
                           -1
                         ]);
 
-  let a_anticipate = new Anim8(ctx.g,
-                               [21, 25],
-                               0, 3, [
-                                 ticks.sixth,
-                               ]);
-
   let a_jumpaccel = new Anim8(ctx.g,
                               [21, 25],
-                              1, 3, [
+                              10, 0, [
                                 ticks.sixth,
                               ]);
 
   let a_hang = new Anim8(ctx.g,
                          [21, 25],
-                         2, 3, [
+                         8, 0, [
                            ticks.sixth,
                          ]);
 
   let a_fall = new Anim8(ctx.g,
                          [21, 25],
-                         0, 4, [
+                         12, 0, [
                            ticks.sixth,
                            ticks.second * 30
                          ]);

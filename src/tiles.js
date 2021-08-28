@@ -13,9 +13,5 @@ export function player(room, x, y) {
 export default [
   solid,
   solid,
-  solid,
-  solid,
-  jumper,
-  solid,
   player
 ];

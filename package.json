@@ -4,9 +4,10 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dist": "yarn -s build && zip -r dist.zip -j dist && echo `ls -lh dist.zip | cut -f5 -d ' '` bytes.",
+    "dist": "yarn -s clean && yarn -s build && zip -r dist.zip -j dist && echo `ls -lh dist.zip | cut -f5 -d ' '` bytes.",
     "start": "webpack serve --port=3000 --mode=development",
     "build": "webpack --mode=production",
+    "clean": "rm -rf dist && rm -f dist.zip",
     "levels": "node gen/levels.js"
   },
   "devDependencies": {

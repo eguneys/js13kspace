@@ -1,45 +1,12 @@
-//import leveldat from '../assets/level.dat';
-import sprites from '../assets/sprites.png';
+//import sprites from '../assets/sprites.png';
 import levelpng from '../assets/level.png';
-
-// export function LevelData(buff) {
-
-//   buff = new Uint16Array(buff);
-//   let w = buff[0],
-//       h = buff[1],
-//       _rs = w * h;
-
-//   let res = [];
-//   let col_idx = 0;
-//   let i = 2;
-
-//   while (i < buff.length) {
-//     i++;
-//     let coords = [];
-//     while(i < buff.length && buff[i] < _rs) {
-//       coords.push([
-//         buff[i]%w, Math.floor(buff[i]/w)
-//       ]);
-//       i++;
-//     }
-//     res.push(coords);
-//   }
-
-//   this.width = w;
-//   this.height = h;
-//   this.res = res;
-// }
 
 export function LevelData(image) {
 
   const colors = [
-    '#754665',
-    '#ff6e59',
-    '#f3ef7d',
-    '#ffccaa',
-    '#7e2553',
-    '#ff004d',
-    '#fff1e8'
+    '#ff0000',
+    '#c00000',
+    '#ffffcc'
   ];
 
   const rgbtostring = (color) => {
@@ -90,7 +57,7 @@ function image(path) {
 
 export default function Assets() {
   return Promise.all([
-    image(sprites),
+    image(levelpng),
     image(levelpng)
       .then(level =>
         new LevelData(level))

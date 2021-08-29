@@ -10,8 +10,13 @@ export function player(room, x, y) {
   room.player(x, y);
 }
 
+export function sword(room, x, y) {
+  room.sword(x, y);
+}
+
 export default [
   solid,
   solid,
-  player
+  player,
+  sword
 ];

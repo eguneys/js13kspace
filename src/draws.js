@@ -179,8 +179,10 @@ export function JumperDraw(ctx, room, jumper, isblue) {
     a_current.draw(jumper.body.x, jumper.body.y, jumper.facing === -1);
     a_head.draw(jumper.body.x + jumper.facing * a_current.o_x(), jumper.body.y + a_current.o_y(), jumper.facing === -1);
 
-    a_sword_c.draw(-jumper.facing * 10 + jumper.body.x + jumper.facing * a_current.o_x(),
-                      16 + jumper.body.y + jumper.facing * a_current.o_y(), jumper.facing === -1);
+    if (jumper.dslash >= 0) {
+      a_sword_c.draw(-jumper.facing * 10 + jumper.body.x + jumper.facing * a_current.o_x(),
+                     16 + jumper.body.y + jumper.facing * a_current.o_y(), jumper.facing === -1);
+    }
   };
   
 }

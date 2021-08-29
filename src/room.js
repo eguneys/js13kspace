@@ -17,7 +17,7 @@ export default function Room(ctx) {
 
     this.grid = new Grid(4, 4, level.width, level.height);
 
-    this.objects = new Grid(16, 16, level.width, level.height);
+    this.objects = [];
     
     for (let i = 0; i < level.res.length; i++) {
       for (let j = 0; j < level.res[i].length; j++) {
@@ -38,6 +38,19 @@ export default function Room(ctx) {
                              y,
                              w, h, ox, oy);
   };
+
+  this.get = (type) => {
+    return this.objects
+      .filter(_ => _.is === type);
+  };
+
+  this.collide_check = (type, x, y, w, h, ox, oy) => {
+    return this.objects
+      .filter(_ => _.is === type && _.body)
+      .find(obj =>
+        inters(obj.body.cbox,
+               [x + ox, y + oy, w, h]));
+  };
   
   this.solid = (x, y, i) => {
     this.grid.get(x, y, tile_colors[i]);
@@ -45,13 +58,20 @@ export default function Room(ctx) {
 
   this.player = (x, y) => {
     let obj = new PlayerSpawn(ctx, this);
-    this.objects.get(x, y, obj);
+    this.objects.push(obj);
     obj.init(x, y);
     return obj;
   };
 
-  this.rmv = (obj) => {
-    this.objects.remove(obj);
+  this.sword = (x, y) => {
+    let obj = new SwordSpawn(ctx, this);
+    this.objects.push(obj);
+    obj.init(x, y);
+    return obj;    
+  };
+
+  this.remove = (obj) => {
+    this.objects = this.objects.filter(_ => _ !== obj);
   };
 
   this.f_collide = body => {
@@ -60,7 +80,7 @@ export default function Room(ctx) {
 
   this.update = dt => {
     this.camera.update(dt);
-    for (let obj of this.objects.all()) {
+    for (let obj of this.objects) {
       obj.update(dt);
     }
     a_tile.update(dt);
@@ -80,7 +100,7 @@ export default function Room(ctx) {
     
     this.grid.draw(a_tile);
     
-    for (let obj of this.objects.all()) {
+    for (let obj of this.objects) {
       obj.draw();
     }
 
@@ -91,6 +111,11 @@ export default function Room(ctx) {
 export function PlayerSpawn(ctx, room) {
   let { g, a } = ctx;
 
+  let a_xc = new Anim8(ctx.g,
+                       [8, 8, 320, 32],
+                       0, 0, [ticks.sixth,
+                              ticks.sixth]);
+
   this.init = (x, y) => {
     this.x = x;
     this.y = y;
@@ -100,14 +125,89 @@ export function PlayerSpawn(ctx, room) {
              new PlayerThink(ctx, room, obj),
              new JumperDraw(ctx, room, obj));
     
-    room.objects.get(this.x, this.y, obj);
+    room.objects.push(obj);
     room.camera.follow(obj.ctarget);
   };
 
-  this.update = dt => {};
+  this.update = dt => {
+    a_xc.update(dt);
+  };
 
-  this.draw = () => {};
+  this.draw = () => {
+    a_xc.draw(this.x + 80, this.y - 80);
+  };
 }
+
+
+export function SwordSpawn(ctx, room) {
+
+  let a_xc = new Anim8(ctx.g,
+                       [8, 8, 320, 32],
+                       2, 0, [ticks.sixth,
+                              ticks.sixth]);
+
+  
+  this.is = 'swordspawn';
+  
+  let { g, a } = ctx;
+
+  let a_sword_spawn = new Anim8(ctx.g,
+                                [16, 16, 128, 48],
+                                0, 0, [ticks.sixth,
+                                       ticks.sixth,
+                                       ticks.sixth,
+                                       ticks.sixth], [
+                                         1,
+                                         -1,
+                                         0,
+                                         0], [
+                                           -2,
+                                           0,
+                                           2,
+                                           0
+                                         ]);
+
+  let used = -1;
+
+  this.init = (x, y) => {
+    this.body = new Body(x, y-25, 0, 0, 16, 16, room.f_collide);
+  };
+
+  this.req = () => {
+    if (used < 0) {
+      used = ticks.second;
+    }
+  };
+  
+  this.update = dt => {
+    a_sword_spawn.update(dt);
+
+    if (used > 0) {
+      used = appr(used, 0, dt);
+      if (used === 0) {
+        room.get('player')[0].sword();
+      }
+    }
+
+    a_xc.update(dt);
+  };
+
+  this.draw = () => {
+    // this.body.draw(g, tile_colors[0]);
+
+    if (used > 0) {
+      let t = ((ticks.second - used) / ticks.second);
+      if ((t * ticks.second) % (2 * ticks.lengths) < ticks.lengths) {
+        a_sword_spawn.draw(this.body.x, this.body.y - t * 30);
+      }
+    } else if (used < 0) {
+      a_sword_spawn.draw(this.body.x, this.body.y);
+    } else {
+      a_xc.draw(this.body.x, this.body.y - 30);
+    }
+  };
+}
+
 
 export function Jumper(ctx, room) {
 
@@ -138,9 +238,13 @@ export function Jumper(ctx, room) {
     this.move_y = 0;
 
     this.slashing = 0;
-    this.dslash = 1;
+    this.dslash = -1;
     
     getctarget();
+  };
+
+  this.sword = () => {
+    this.dslash = 1;
   };
 
   this.walk = dx => this.move_x = dx;
@@ -169,7 +273,7 @@ export function Jumper(ctx, room) {
     this.grounded = room.is_solid(...this.body.cbox, 0, 1);
 
     if (this.grounded) {
-      if (this.slashing === 0) {
+      if (this.dslash >= 0 && this.slashing === 0) {
         this.dslash = 1;
       }
     }
@@ -178,9 +282,18 @@ export function Jumper(ctx, room) {
     this.actions.update(dt);
     this.body.move(dt);
     this.anim.update(dt);
+
+
+    let swordspan = room.collide_check('swordspawn', ...this.body.cbox, 0, 0);
+
+    if (swordspan) {
+      swordspan.req();
+    }
+    
+    
     
     if (this.dead) {
-      room.rmv(this);
+      room.remove(this);
     }
   };
 

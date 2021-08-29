@@ -136,17 +136,43 @@ export function Jumper(ctx, room) {
 
     this.move_x = 0;
     this.move_y = 0;
+
+    this.slashing = 0;
+    this.dslash = 1;
     
     getctarget();
   };
 
   this.walk = dx => this.move_x = dx;
   this.jump = dy => this.move_y = dy;
+
+  this.slash = (dx, dy) => {
+    if (this.dslash > 0 && this.slashing === 0) {
+      this.sdir = [dx, dy];
+      this.slashing = ticks.sixth;
+      this.dslash-= 1;
+    }
+  };
   
   this.update = dt => {
     getctarget();
 
+    if (this.slashing > 0) {
+      this.slashing = appr(this.slashing, 0, dt);
+      if (this.slashing === 0) {
+        this.slashing = -ticks.sixth;
+      }
+    } else if (this.slashing < 0) {
+      this.slashing = appr(this.slashing, 0, dt);
+    }
+    
     this.grounded = room.is_solid(...this.body.cbox, 0, 1);
+
+    if (this.grounded) {
+      if (this.slashing === 0) {
+        this.dslash = 1;
+      }
+    }
     
     this.think.update(dt);
     this.actions.update(dt);

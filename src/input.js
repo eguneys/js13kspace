@@ -44,6 +44,9 @@ export default function Input() {
     case 'ArrowRight':
       press('right');
       break;
+    case 'x':
+      press('x');
+      break;
     case 'c':
       press('c');
       break;
@@ -67,6 +70,9 @@ export default function Input() {
     case 'c':
       release('c');
       break;
+    case 'x':
+      release('x');
+      break;      
     }
   });
 

@@ -4,9 +4,9 @@
 - [x] Sword , master NPC
 - [ ] Enemy
 - [ ] Sword Enemy FX
-- [ ] Background - decoration
 - [ ] Die Respawn
+- [ ] Background - decoration
 - [ ] End NPC, Make space for love
-- [ ] More FX
-- [ ] Intro
+- [ ] More FX, Die Respawn
+- [ ] Transitions, Intro
 - [ ] Story Atmosphere

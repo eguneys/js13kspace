@@ -1,4 +1,4 @@
-//import sprites from '../assets/sprites.png';
+import sprites from '../assets/sprites.png';
 import levelpng from '../assets/level.png';
 
 export function LevelData(image) {
@@ -58,7 +58,7 @@ function image(path) {
 
 export default function Assets() {
   return Promise.all([
-    image(levelpng),
+    image(sprites),
     image(levelpng)
       .then(level =>
         new LevelData(level))

@@ -104,8 +104,8 @@ export function JumperDraw(ctx, room, jumper, isblue) {
   let a_slash = new Anim8(ctx.g,
                           [21, 25],
                           18, 0, [
-                            ticks.third/3,
-                            ticks.third/3,
+                            (ticks.sixth+ticks.lengths)/3,
+                            (ticks.sixth+ticks.lengths)/3,
                             ticks.third
                           ]);  
 
@@ -138,6 +138,7 @@ export function JumperDraw(ctx, room, jumper, isblue) {
     }
 
     if (jumper.slashing > 0) {
+      console.log(a_current === a_slash);
       toa(a_slash);
     } else if (jumper.grounded) {
       if (Math.abs(jumper.body.dx) < runAccel && jumper.move_x === 0) {

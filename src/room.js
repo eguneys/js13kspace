@@ -253,7 +253,7 @@ export function Jumper(ctx, room) {
   this.slash = (dx, dy) => {
     if (this.dslash > 0 && this.slashing === 0) {
       this.sdir = [dx, dy];
-      this.slashing = ticks.sixth;
+      this.slashing = ticks.sixth + ticks.lengths;
       this.dslash-= 1;
     }
   };

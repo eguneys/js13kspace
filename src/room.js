@@ -70,6 +70,13 @@ export default function Room(ctx) {
     return obj;    
   };
 
+  this.enemy = (x, y) => {
+    let obj = new Enemy(ctx, this);
+    this.objects.push(obj);
+    obj.init(x, y);
+    return obj;
+  };
+
   this.remove = (obj) => {
     this.objects = this.objects.filter(_ => _ !== obj);
   };
@@ -280,17 +287,35 @@ export function Jumper(ctx, room) {
     
     this.think.update(dt);
     this.actions.update(dt);
-    this.body.move(dt);
     this.anim.update(dt);
 
 
     let swordspan = room.collide_check('swordspawn', ...this.body.cbox, 0, 0);
 
     if (swordspan) {
+      room.get('enemy').forEach(_ => _.live());
       swordspan.req();
     }
+
+    let enemy = room.collide_check('enemy', ...this.body.cbox, 0, 0);
     
+    if (enemy) {
+      this.body.dx *= 0.5;
+      if (this.slashing > 0) {
+        enemy.damage();
+      } else {
+        if (this.dslash > 0) {
+          if (enemy.t_dying === -1) {
+
+            this.body.dx *= -2;
+            
+          }
+        }
+      }
+    }
     
+
+    this.body.move(dt);
     
     if (this.dead) {
       room.remove(this);
@@ -300,5 +325,71 @@ export function Jumper(ctx, room) {
   this.draw = () => {
     //this.body.draw(g, tile_colors[4]);
     this.anim.draw();
+  };
+}
+
+
+export function Enemy(ctx, room) {
+
+  this.is = 'enemy';
+  
+  let a_live = new Anim8(ctx.g,
+                         [33, 19, 0, 77],
+                         0, 0, [ticks.half,
+                                ticks.half,
+                                ticks.half]);
+
+  let a_dead = new Anim8(ctx.g,
+                         [33, 19, 0, 77],
+                         3, 0, [ticks.second]);
+  let a_current;
+  
+  let { g, a } = ctx;
+
+  this.init = (x, y) => {
+    this.body = new Body(x, y-19+4, 4, 4, 33 - 6, 19 -4, room.f_collide);
+
+    a_current = a_dead;
+
+    this.t_dying = -1;
+  };
+
+  this.live = () => {
+    a_current = a_live;
+  };
+  
+  this.damage = () => {
+    if (this.t_dying < 0) {
+      this.t_dying = ticks.half;
+      this.body.dx = 16 / ticks.half;
+    }
+  };
+  
+  this.update = dt => {
+    
+    
+    if (this.t_dying > 0) {
+      this.t_dying = appr(this.t_dying, 0, dt);
+
+      if (this.t_dying === 0) {
+        a_current = a_dead;
+      }
+    }
+    this.body.dx = appr(this.body.dx, 0, dt * (16 / ticks.half));
+        
+    this.body.move(dt);
+    
+    a_current.update(dt);
+  };
+
+  this.draw = () => {
+    // this.body.draw(g, tile_colors[4]);
+    a_current.draw(this.body.x, this.body.y);
+
+    if (this.t_dying > 0) {
+      if (((this.t_dying / ticks.half) % (ticks.sixth * 2)) < ticks.sixth) {
+        g.fr(...this.body.cbox, colors.light);
+      }
+    }
   };
 }

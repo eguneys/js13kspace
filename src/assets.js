@@ -7,7 +7,8 @@ export function LevelData(image) {
     '#ff0000',
     '#c00000',
     '#ffffcc',
-    '#0000ff'
+    '#0000ff',
+    '#ffff00'
   ];
 
   const rgbtostring = (color) => {

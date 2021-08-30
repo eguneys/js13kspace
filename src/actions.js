@@ -1,3 +1,5 @@
+import { slashFx } from './fxs';
+
 export const maxV = 70 / ticks.second;
 export const runAccel = (2 * maxV) / ticks.lengths;
 const runReduce = runAccel / 2;
@@ -39,12 +41,6 @@ export default function Actions(jumper) {
       jumper.facing = jumper.move_x;
     }
 
-    if (jumper.move_y !== 0) {
-      if (jumpGrace > 0) {
-        jump();
-      }
-    }
-
     if (jumper.grounded) {
       jumpGrace = ticks.lengths;
     } else {
@@ -58,6 +54,12 @@ export default function Actions(jumper) {
       jumper.body.dx = dashSpeed * ((jumper.sdir[0] === 0 && jumper.sdir[1] === 0)
                                     ? jumper.facing : jumper.sdir[0]);
       jumper.body.dy = dashSpeed * jumper.sdir[1];
+    }
+
+        if (jumper.move_y !== 0) {
+      if (jumpGrace > 0) {
+        jump();
+      }
     }
     
   };

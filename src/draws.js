@@ -138,7 +138,6 @@ export function JumperDraw(ctx, room, jumper, isblue) {
     }
 
     if (jumper.slashing > 0) {
-      console.log(a_current === a_slash);
       toa(a_slash);
     } else if (jumper.grounded) {
       if (Math.abs(jumper.body.dx) < runAccel && jumper.move_x === 0) {

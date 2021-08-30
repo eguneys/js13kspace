@@ -6,6 +6,7 @@ import { JumperThink, PlayerThink } from './thinks';
 import { JumperDraw } from './draws';
 import Camera from './camera';
 import Actions from './actions';
+import { group, makeBlood, slashFx } from './fxs';
 
 export default function Room(ctx) {
   let { g, a } = ctx;
@@ -18,6 +19,7 @@ export default function Room(ctx) {
     this.grid = new Grid(4, 4, level.width, level.height);
 
     this.objects = [];
+    this.fxs = [];
     
     for (let i = 0; i < level.res.length; i++) {
       for (let j = 0; j < level.res[i].length; j++) {
@@ -77,8 +79,21 @@ export default function Room(ctx) {
     return obj;
   };
 
+  this.fx = (fx, x, y, dx, dy) => {
+    let obj = new AnimFx(ctx, this);
+    this.fxs.push(obj);
+    obj.init(fx, x, y, dx, dy);
+    return obj;
+  };
+
+  this.fxi = (fxi, x, y) => {
+    fxi.init(x, y);
+    this.fxs.push(fxi);
+  };
+
   this.remove = (obj) => {
     this.objects = this.objects.filter(_ => _ !== obj);
+    this.fxs = this.fxs.filter(_ => _ !== obj);
   };
 
   this.f_collide = body => {
@@ -90,6 +105,10 @@ export default function Room(ctx) {
     for (let obj of this.objects) {
       obj.update(dt);
     }
+    for (let obj of this.fxs) {
+      obj.update(dt);
+    }
+
     a_tile.update(dt);
   };
 
@@ -109,6 +128,10 @@ export default function Room(ctx) {
     
     for (let obj of this.objects) {
       obj.draw();
+    }
+
+    for (let fx of this.fxs) {
+      fx.draw();
     }
 
     this.camera.detach();
@@ -215,10 +238,43 @@ export function SwordSpawn(ctx, room) {
   };
 }
 
+export function AnimFx(ctx, room) {
+  
+
+  let x, y,
+      dx, dy;
+  let anim_fx;
+  
+  this.init = (_anim_fx, _x, _y, _dx, _dy) => {
+    x = _x;
+    y = _y;
+    dx = _dx;
+    dy = _dy;
+    anim_fx = _anim_fx;
+
+    if (dx === -1) {
+      x -= anim_fx.w;
+    }
+  };
+
+  this.update = dt => {
+    anim_fx.update(dt);
+    if (anim_fx.ri === 1) {
+      room.remove(this);
+    }
+  };
+
+  this.draw = () => {
+    anim_fx.draw(x, y, dx=== -1, dy===-1);
+  };
+  
+}
+
 
 export function Jumper(ctx, room) {
 
   let { g, a } = ctx;
+  this.g = g;
 
   this.ctarget = [0, 0];
   
@@ -229,6 +285,8 @@ export function Jumper(ctx, room) {
 
   this.init = (x, y, think, anim) => {
 
+    this.room = room;
+    
     this.anim = anim;
     
     this.think = think;
@@ -297,13 +355,32 @@ export function Jumper(ctx, room) {
       swordspan.req();
     }
 
-    let enemy = room.collide_check('enemy', ...this.body.cbox, 0, 0);
+    let enemy = room.collide_check('enemy', ...this.body.cbox, this.facing * 15, 0);
     
     if (enemy) {
+      
       this.body.dx *= 0.5;
       if (this.slashing > 0) {
-        enemy.damage();
+
+        if (!_oneslash) {
+          _oneslash = true;
+          room.fx(slashFx(g),
+                  this.body.cbox[0]+
+                  this.body.cbox[2]*0.5,
+                  this.body.cbox[1],
+                  this.facing,
+                  0
+                 );
+
+          room.fxi(new group(ctx, room, makeBlood, this.facing),
+                   enemy.body.cbox[0],
+                   enemy.body.cbox[1]);
+        }
+        
+        if (enemy.damage()) {
+        }
       } else {
+        _oneslash = false;
         if (this.dslash > 0) {
           if (enemy.t_dying === -1) {
 
@@ -312,6 +389,8 @@ export function Jumper(ctx, room) {
           }
         }
       }
+    } else {
+      _oneslash = false;
     }
     
 
@@ -321,6 +400,8 @@ export function Jumper(ctx, room) {
       room.remove(this);
     }
   };
+
+  let _oneslash = false;
 
   this.draw = () => {
     //this.body.draw(g, tile_colors[4]);
@@ -362,11 +443,12 @@ export function Enemy(ctx, room) {
     if (this.t_dying < 0) {
       this.t_dying = ticks.half;
       this.body.dx = 16 / ticks.half;
+      return true;
     }
+    return false;
   };
   
   this.update = dt => {
-    
     
     if (this.t_dying > 0) {
       this.t_dying = appr(this.t_dying, 0, dt);

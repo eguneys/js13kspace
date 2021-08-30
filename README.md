@@ -2,7 +2,7 @@
 - [no] Ledge Climb, walking
 - [x] Tiles, Cyberpunk Theme
 - [x] Sword , master NPC
-- [ ] Enemy
+- [x] Enemy
 - [ ] Sword Enemy FX
 - [ ] Die Respawn
 - [ ] Background - decoration

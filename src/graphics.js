@@ -20,6 +20,8 @@ export default function Graphics(element, sprites) {
   this.fr = (x, y, w, h) => {
     x = Math.round(x);
     y = Math.round(y);
+    w = Math.round(w);
+    h = Math.round(h);
     
     ctx.fillRect(x, y, w, h);
   };

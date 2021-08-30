@@ -3,7 +3,7 @@
 - [x] Tiles, Cyberpunk Theme
 - [x] Sword , master NPC
 - [x] Enemy
-- [ ] Sword Enemy FX
+- [x] Sword Enemy FX
 - [ ] Die Respawn
 - [ ] Background - decoration
 - [ ] End NPC, Make space for love

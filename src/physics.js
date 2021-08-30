@@ -19,6 +19,8 @@ export default function Body(_x, _y, _ox, _oy, _w, _h, f_collide) {
   this.remx = 0;
   this.remy = 0;
 
+  this.damping = 1;
+
   this._get_body = () => {
     this.cbox_pre[0] = this.cbox[0];
     this.cbox_pre[1] = this.cbox[1];
@@ -40,12 +42,12 @@ export default function Body(_x, _y, _ox, _oy, _w, _h, f_collide) {
   this.move = (dt) => {
     this._get_body();
 
-    this.remx += this.dx * dt;
+    this.remx += this.dx * dt * this.damping;
     let amount = Math.floor(this.remx);
     this._move_x(amount);
     this.remx -= amount;
 
-    this.remy += this.dy * dt;
+    this.remy += this.dy * dt * this.damping;
     amount = Math.floor(this.remy);
     this._move_y(amount);
     this.remy -= amount;

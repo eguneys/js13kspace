@@ -342,11 +342,12 @@ export function Jumper(ctx, room) {
         this.dslash = 1;
       }
     }
-    
+
+
     this.think.update(dt);
     this.actions.update(dt);
+    this.body.move(dt);
     this.anim.update(dt);
-
 
     let swordspan = room.collide_check('swordspawn', ...this.body.cbox, 0, 0);
 
@@ -356,10 +357,12 @@ export function Jumper(ctx, room) {
     }
 
     let enemy = room.collide_check('enemy', ...this.body.cbox, this.facing * 15, 0);
-    
+
+    this.body.damping = appr(this.body.damping, 1, dt);
     if (enemy) {
+
+      this.body.damping = 0.4;
       
-      this.body.dx *= 0.5;
       if (this.slashing > 0) {
 
         if (!_oneslash) {
@@ -384,7 +387,7 @@ export function Jumper(ctx, room) {
         if (this.dslash > 0) {
           if (enemy.t_dying === -1) {
 
-            this.body.dx *= -2;
+            this.body.damping = -1;
             
           }
         }
@@ -392,9 +395,6 @@ export function Jumper(ctx, room) {
     } else {
       _oneslash = false;
     }
-    
-
-    this.body.move(dt);
     
     if (this.dead) {
       room.remove(this);

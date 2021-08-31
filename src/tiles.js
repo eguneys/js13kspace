@@ -18,10 +18,15 @@ export function enemy(room, x, y) {
   room.enemy(x, y);
 }
 
+export function love(room, x, y) {
+  room.love(x, y);
+}
+
 export default [
   solid,
   solid,
   player,
   sword,
-  enemy
+  enemy,
+  love
 ];

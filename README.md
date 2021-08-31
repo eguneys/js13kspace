@@ -5,7 +5,7 @@
 - [x] Enemy
 - [x] Sword Enemy FX
 - [x] Die Respawn
-- [ ] Background - decoration
+- [x] Background - decoration
 - [ ] End NPC, Make space for love
 - [ ] More FX, Die Respawn
 - [ ] Transitions, Intro

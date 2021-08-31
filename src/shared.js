@@ -2,7 +2,8 @@ colors = {
   dark: '#1d2b53',
   light: '#fff1e8',
   red: '#ff004d',
-  darkred: '#422136'
+  darkred: '#422136',
+  blue: '#29adff',
 };
 
 

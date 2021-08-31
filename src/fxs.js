@@ -1,5 +1,26 @@
 import Anim8 from './anim8';
 
+export function letterFx(g) {
+  const dr = () => Math.random() * ticks.sixth;
+  return new Anim8(g,
+                   [16, 16, 352, 32],
+                   0, 0, [dr(),
+                          dr(),
+                          dr(),
+                          dr(),
+                          dr()], [
+                            1,
+                            0,
+                            -1,
+                            0,
+                            0], [
+                              0,
+                              -8,
+                              -8,
+                              -16,
+                              -24]);
+}
+
 export function starFx(g) {
 
   return new Anim8(g,
@@ -110,3 +131,4 @@ export function blood(ctx, room) {
   };
   
 }
+

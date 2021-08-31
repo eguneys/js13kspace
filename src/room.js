@@ -6,7 +6,7 @@ import { JumperThink, PlayerThink } from './thinks';
 import { JumperDraw } from './draws';
 import Camera from './camera';
 import Actions from './actions';
-import { group, makeBlood, slashFx } from './fxs';
+import { group, makeBlood, slashFx, letterFx } from './fxs';
 import Background from './background';
 
 export default function Room(play, ctx) {
@@ -96,6 +96,14 @@ export default function Room(play, ctx) {
     let obj = new Enemy(ctx, this);
     this.objects.push(obj);
     obj.init(x, y);
+    return obj;
+  };
+
+  this.love = (x, y) => {
+    let obj = new Love(ctx, this);
+    this.objects.push(obj);
+    obj.init(x, y);
+    //this.player(x, y);
     return obj;
   };
 
@@ -450,6 +458,68 @@ export function Jumper(ctx, room) {
   };
 }
 
+export function Love(ctx, room) {
+  this.is = 'love';
+
+  let a_live = new Anim8(ctx.g,
+                         [22, 30, 272, 58],
+                         0, 0, [ticks.third,
+                                ticks.sixth,
+                                ticks.sixth], [
+                                  0,
+                                  1,
+                                  2
+                                ]);
+
+  let { g, a } = ctx;
+
+  let x, y, talking;
+  
+  this.init = (_x, _y) => {
+    x = _x;
+    y = _y - 26;
+    talking = false;
+  };
+
+  this.update = dt => {
+    let p = room.collide_check('player',
+                               x, y, 100, 20, -100, 0);
+    if (p && p.facing === 1) {
+      talking = true;
+      room.play.end();
+    } else {
+      talking = false;
+    }
+
+    
+    if (talking && Math.random() < 0.1) {
+      room.fx(letterFx(g), x - 80 + Math.random() * 64, y - 20 - 16, 0, 0);
+    }
+    a_live.update(dt);
+  };
+
+  let t = 0,
+      t1 = 0,
+      t2 = 0,
+      t3 = 0;
+  
+  this.draw = () => {
+    a_live.draw(x, y);
+
+    if (talking) {
+      t++;
+      t3 = t2 * 0.5;
+      t2 = t1 * 0.3;
+      t1 = Math.sin((t/Math.PI * 2) * (ticks.sixth * 0.5)) * 4;
+      g.color(colors.light);
+      g.fr(x - 80 + t1, y - 60, 80, 40);
+
+      g.fr(x - 8 + t2, y - 18, 8, 8);
+      g.fr(x + 2 + t3, y - 10, 4, 4);
+    }
+
+  };
+}
 
 export function Enemy(ctx, room) {
 

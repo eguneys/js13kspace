@@ -19,10 +19,10 @@ export default function Graphics(element, sprites) {
   };
 
   this.fr = (x, y, w, h) => {
-    x = Math.round(x);
-    y = Math.round(y);
-    w = Math.round(w);
-    h = Math.round(h);
+    x = Math.floor(x);
+    y = Math.floor(y);
+    w = Math.floor(w);
+    h = Math.floor(h);
     
     ctx.fillRect(x, y, w, h);
   };

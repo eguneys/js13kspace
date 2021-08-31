@@ -24,7 +24,7 @@ export default function Room(play, ctx) {
     this.width = level.width * 4;
     this.height = level.height * 4;
 
-    this.bg = new Background(g, this.width, this.height);
+    this.bg = new Background(this, g, this.width, this.height);
 
     this.objects = [];
     this.fxs = [];
@@ -41,6 +41,18 @@ export default function Room(play, ctx) {
         }
       }
     }
+
+    let r = Array(8).fill(0);
+    for (let i = 0; i < level.width; i+=(1+Math.random()*10)) {
+      for (let j = 0; j < level.height; j++) {
+        if (r.every((_, k) =>
+          this.grid.get((i + k) * 4, j * 4))) {
+          this.grid.get(i*4, j*4, 33);
+          i+= 60/4;
+        }
+      }
+    }
+    
   };
 
   this.is_solid = (x, y, w, h, ox, oy) => {
@@ -111,6 +123,7 @@ export default function Room(play, ctx) {
   this.update = dt => {
     this.bg.update(dt);
     this.camera.update(dt);
+
     for (let obj of this.objects) {
       obj.update(dt);
     }
@@ -135,8 +148,6 @@ export default function Room(play, ctx) {
     
     this.camera.attach();
 
-    this.grid.draw(a_tile);
-    
     for (let obj of this.objects) {
       obj.draw();
     }
@@ -144,7 +155,8 @@ export default function Room(play, ctx) {
     for (let fx of this.fxs) {
       fx.draw();
     }
-
+    this.grid.draw(a_tile, g);
+    
     this.camera.detach();
   };
 }
@@ -499,7 +511,8 @@ export function Enemy(ctx, room) {
 
     if (this.t_dying > 0) {
       if (((this.t_dying / ticks.half) % (ticks.sixth * 2)) < ticks.sixth) {
-        g.fr(...this.body.cbox, colors.light);
+        g.color(colors.light);
+        g.fr(...this.body.cbox);
       }
     }
   };

@@ -28,7 +28,7 @@ export default function Grid(celw, celh, nbtilesx, nbtilesy) {
     return this.data.get(y * width + x);
   };
 
-  this.draw = (a_tile) => {
+  this.draw = (a_tile, g) => {
     for (let i = 0; i < nbtilesx; i++) {
       for (let j = 0; j < nbtilesy; j++) {
         let t = this.get(i*celw, j*celh);
@@ -36,6 +36,14 @@ export default function Grid(celw, celh, nbtilesx, nbtilesy) {
           //g.color(t);
           //g.fr(i * celw, j * celh, celw, celh);
           a_tile.draw(i * celw, j * celh, celw, celh);
+        }
+      }
+    }
+    for (let i = 0; i < nbtilesx; i++) {
+      for (let j = 0; j < nbtilesy; j++) {
+        let t = this.get(i*celw, j*celh);
+        if (t === 33) {
+          g.spr(i * celw, j* celh - 18, 192, 40, 56, 27);
         }
       }
     }

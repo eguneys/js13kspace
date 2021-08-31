@@ -1,5 +1,20 @@
 import Anim8 from './anim8';
 
+export function starFx(g) {
+
+  return new Anim8(g,
+                   [7, 12, 24, 48],
+                   0, 0, [ticks.sixth,
+                          ticks.sixth,
+                          ticks.sixth], [
+                            1,
+                            0,
+                            -1], [
+                              0,
+                              -1,
+                              0]);
+}
+
 export function slashFx(g) {
   return new Anim8(g,
                    [89, 32, 0, 97],

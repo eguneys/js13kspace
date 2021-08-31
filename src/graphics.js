@@ -1,10 +1,11 @@
 export default function Graphics(element, sprites) {
   let canvas = document.createElement('canvas'),
       ctx = canvas.getContext('2d');
-  ctx.imageSmoothingEnabled = false;
   canvas.width = 320;
   canvas.height = 180;
   element.appendChild(canvas);
+  ctx.imageSmoothingEnabled = false;
+  
 
   this.cls = () => {
     ctx.clearRect(0, 0, 320, 180);
@@ -36,20 +37,19 @@ export default function Graphics(element, sprites) {
   };
 
 
-  this.spr = (dx, dy, sx, sy, sw, sh, flipH, flipV) => {
+  this.spr = (dx, dy, sx, sy, sw, sh, flipH, flipV, scale = 1) => {
     dx = Math.round(dx);
     dy = Math.round(dy);
 
     ctx.save();
 
     ctx.translate(dx, dy);
-    
+
     if (flipH) {
       ctx.translate(sw, 0);
       ctx.scale(-1, 1);
     }
-    
-    ctx.drawImage(sprites, sx, sy, sw, sh, 0, 0, sw, sh);
+    ctx.drawImage(sprites, sx, sy, sw, sh, 0, 0, sw*scale, sh*scale);
     ctx.restore();
   };
 }

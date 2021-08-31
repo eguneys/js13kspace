@@ -15,11 +15,11 @@ export default function Camera(g) {
     last_target = [...target];
   };
   
-  this.attach = () => {
+  this.attach = (sc_x = 1, sc_y = 1) => {
     g.ctx(ctx => {
       ctx.save();
-      ctx.translate(Math.floor(-pos[0] + 160),
-                    Math.floor(-pos[1] + 90));
+      ctx.translate(Math.floor(-pos[0]*sc_x + 160),
+                    Math.floor(-pos[1]*sc_y + 90));
     });    
   };
 

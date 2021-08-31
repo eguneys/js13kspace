@@ -7,16 +7,24 @@ import { JumperDraw } from './draws';
 import Camera from './camera';
 import Actions from './actions';
 import { group, makeBlood, slashFx } from './fxs';
+import Background from './background';
 
-export default function Room(ctx) {
+export default function Room(play, ctx) {
   let { g, a } = ctx;
 
   this.init = (level) => {
 
+    this.play = play;
+    
     this.camera = new Camera(g);
     this.camera.bounds(0, 0, level.width * 4, level.height * 4);
 
     this.grid = new Grid(4, 4, level.width, level.height);
+
+    this.width = level.width * 4;
+    this.height = level.height * 4;
+
+    this.bg = new Background(g, this.width, this.height);
 
     this.objects = [];
     this.fxs = [];
@@ -101,6 +109,7 @@ export default function Room(ctx) {
   };
 
   this.update = dt => {
+    this.bg.update(dt);
     this.camera.update(dt);
     for (let obj of this.objects) {
       obj.update(dt);
@@ -120,10 +129,12 @@ export default function Room(ctx) {
 
   this.draw = () => {
 
-    this.camera.draw();
+    this.camera.attach(0.2, 0.2);
+    this.bg.draw();
+    this.camera.detach();
     
     this.camera.attach();
-    
+
     this.grid.draw(a_tile);
     
     for (let obj of this.objects) {
@@ -157,6 +168,8 @@ export function PlayerSpawn(ctx, room) {
     
     room.objects.push(obj);
     room.camera.follow(obj.ctarget);
+
+    room.bg.follow(obj.ctarget);
   };
 
   this.update = dt => {
@@ -361,7 +374,7 @@ export function Jumper(ctx, room) {
     this.body.damping = appr(this.body.damping, 1, dt);
     if (enemy) {
 
-      this.body.damping = 0.4;
+      this.body.damping = 0.6;
       
       if (this.slashing > 0) {
 
@@ -394,6 +407,22 @@ export function Jumper(ctx, room) {
       }
     } else {
       _oneslash = false;
+    }
+
+
+    let right_off = this.body.cbox[0] +
+        this.body.cbox[2] - room.width,
+        left_off = 0 - this.body.cbox[0],
+        down_off = this.body.cbox[1] - room.height;
+
+    if (right_off > 0) {
+      this.body.x -= right_off;
+    } else if (left_off > 0) {
+      this.body.x += left_off;
+    }
+
+    if (down_off > 0) {
+      room.play.rst();
     }
     
     if (this.dead) {

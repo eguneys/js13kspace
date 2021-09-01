@@ -18,9 +18,8 @@ export default function Play(ctx) {
   
   this.init = () => {
     go_to_end = false;
-    go_to_end = true;
+    // this.end_do();
     this.rst();
-    this.ending.draw();
   };
 
 
@@ -35,13 +34,18 @@ export default function Play(ctx) {
   this.end = () => {
     ending = ticks.second * 10;
   };
+
+  this.end_do = () => {
+    go_to_end = true;
+    this.ending.init();    
+  };
   
   this.update = (dt) => {
 
     if (ending > 0) {
       ending = appr(ending, 0, dt);
       if (ending === 0) {
-        go_to_end = true;
+        this.end_do();
         trans_on = trans_dur * 0.5;
       }
     }
@@ -61,8 +65,12 @@ export default function Play(ctx) {
       trans_off = appr(trans_off, 0, dt);
     }
 
-    if (trans_on === 0 && !go_to_end) {
-      this.room.update(dt);
+    if (trans_on === 0) {
+      if (go_to_end) {
+        this.ending.update(dt);
+      } else {
+        this.room.update(dt);
+      }
     }
   };
 

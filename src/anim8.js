@@ -46,11 +46,11 @@ export default function Anim8(g, grid, fx, fy, durations, xoffsets = [], yoffset
     oy = lerp(0.3, oy, yoffsets[frame] || 0);
   };
   
-  this.draw = (x, y, flipH, flipV) => {
+  this.draw = (x, y, flipH, flipV, scale) => {
     let fdirh = flipH ? -1: 1,
         fdirv = flipV ? -1: 1;
     let frame = _frame();
-    g.spr(x + ox * fdirh, y + oy * fdirv, ...frame, flipH, flipV);
+    g.spr(x + ox * fdirh, y + oy * fdirv, ...frame, flipH, flipV, scale);
   };
   
 }

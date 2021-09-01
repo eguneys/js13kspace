@@ -4,6 +4,7 @@ colors = {
   red: '#ff004d',
   darkred: '#422136',
   blue: '#29adff',
+  black: '#000000'
 };
 
 
